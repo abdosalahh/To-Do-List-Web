@@ -1,0 +1,227 @@
+html:
+------------------------------------------------------------
+<div class="screen">
+    <h1>To-Do-List-App</h1>
+  
+    <hr>
+    <form id="SubmitForm" (ngSubmit)="onSubmit(taskForm)" #taskForm="ngForm">
+      <div class="mb-3">
+        <input 
+        type="text"
+        class="form-control"
+        id="task"
+        placeholder="Enter Your Task Name"
+        ngModel name="taskName"
+        required>
+
+        <input 
+        type="text"
+        class="form-control"
+        id="taskDescription"
+        placeholder="Enter Your Task Description"
+        ngModel name="taskDescription"
+        required>
+
+        <input 
+        type="date"
+        class="form-control"
+        id="dueDate"
+        placeholder="Enter Your Task DueDate"
+        ngModel name="dueDate"
+        required>
+
+        <div *ngIf="taskForm.invalid && taskForm.dirty" id="errorMessage" class="form-text text-danger">Required Field</div>
+      </div>
+      <button
+      [disabled]="taskForm.invalid"
+      id="submitButton" 
+      type="submit" 
+      class="btn btn-primary">Submit</button>
+    </form>
+    <hr>
+  
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Description</th>
+          <th scope="col">DueDate</th>
+          <th scope="col">Status</th>
+          <th scope="col">Delete</th>
+          <th scope="col">Edit</th>
+          <th scope="col">Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor = "let t of tsakArray; index as i">
+          <td>
+            <input
+                #taskNameInput
+                [ngClass]="{'edit': t.isEdit , 'not-edit': !t.isEdit , 'crossed': t.isDone}" 
+                type="text" 
+                class="form-control" 
+                id="TableTask" 
+                [value]="t.taskName" 
+                [readonly]="!t.isEdit"
+            >
+        </td>
+        
+        <td>
+            <input
+                #taskDescriptionInput
+                [ngClass]="{'edit': t.isEdit , 'not-edit': !t.isEdit , 'crossed': t.isDone}" 
+                type="text" 
+                class="form-control" 
+                id="TableTask" 
+                [value]="t.taskDescription" 
+                [readonly]="!t.isEdit"
+            >
+        </td>
+                  
+        <td>
+            <input
+                #dueDateInput
+                [ngClass]="{'edit': t.isEdit , 'not-edit': !t.isEdit , 'crossed': t.isDone}" 
+                type="text" 
+                class="form-control" 
+                id="TableTask" 
+                [value]="t.dueDate" 
+                [readonly]="!t.isEdit"
+            >
+        </td>        
+
+          <td>
+            <input (change)="onCheck(i)" type="checkbox" id="checkbox">
+          </td>
+          <td>
+            <button id="delete" class="btn btn-danger btn-sm" (click)="onDelete(i)">Delete</button>
+          </td>
+          <td>
+            <button id="edit" class="btn btn-primary btn-sm" (click)="onEdit(i)" [disabled]="t.isEdit">Edit</button>
+          </td>
+          <td>
+            <button id="update" class="btn btn-success btn-sm" (click)="onUpdate(i, taskNameInput.value, taskDescriptionInput.value, dueDateInput.value)" [disabled]="!t.isEdit">Update</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+
+css:
+------------------------------------------------------------
+body
+{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+.screen
+{
+    width: 90%;
+    height: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50% , -50%);
+    border-left: 1px solid var(--black);
+    overflow: hidden;
+}
+h1
+{
+    text-align: center;
+    font-size: 35px;
+    font-weight: bold;
+}
+#submitButton
+{
+    margin-top: 20px;
+}
+#checkbox
+{
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+    margin-top: 6px;
+    cursor: pointer;
+}
+#SubmitForm
+{
+    margin-top: 20px;
+}
+#TableTask
+{
+    width: 200px;
+}
+#delete,#edit,#update
+{
+    width: 60px;
+}
+.edit
+{
+    border: solid 2px orange;
+}
+.not-edit
+{
+    border: none;
+}
+.crossed
+{
+    text-decoration: line-through;
+}
+
+
+
+js:
+------------------------------------------------------------
+import { Component } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
+
+@Component({
+  selector: 'app-todo-list',
+  templateUrl: './todo-list.component.html',
+  styleUrl: './todo-list.component.css'
+})
+export class TodoListComponent {
+  tsakArray = [{taskName:'HCI' , taskDescription:'Humman Comp Interaction' , dueDate:'4/6/2002' , isDone : false , isEdit : false}];
+
+  onSubmit(form: NgForm)
+  {
+      console.log(form);
+      this.tsakArray.push
+      ({
+        taskName: form.controls['taskName'].value,
+        taskDescription: form.controls['taskDescription'].value,
+        dueDate: form.controls['dueDate'].value,
+        isDone: false,
+        isEdit: false
+      })
+      form.reset();
+  }
+  
+  onDelete(index: number)
+  {
+    console.log(index);
+    this.tsakArray.splice(index, 1);
+  }
+
+  onCheck(index: number)
+  {
+    console.log(this.tsakArray);
+    this.tsakArray[index].isDone = !this.tsakArray[index].isDone;
+  }
+
+  onEdit(index: number)
+  {
+     this.tsakArray[index].isEdit = true;
+  }
+
+  onUpdate(index: number, taskName: string, taskDescription: string, dueDate: string)
+  {
+     this.tsakArray[index].taskName = taskName;
+     this.tsakArray[index].taskDescription = taskDescription;
+     this.tsakArray[index].dueDate = dueDate;
+     this.tsakArray[index].isEdit = false;
+  }
+}
